@@ -1,14 +1,7 @@
+import { arrayContainsCoord } from "./helper";
 import { createShip } from "./ship";
 
 function createGameboard() {
-  let board = newBoard(10, 10);
-
-  function newBoard(rows, columns) {
-    return Array.from(Array(rows), () =>
-      new Array(columns).fill({ hasShip: false, hasBeenAttacked: false })
-    );
-  }
-
   const ships = [];
 
   function placeShip(start, end, length, name) {
@@ -134,42 +127,34 @@ function createGameboard() {
     placeCarrierRandomly();
   }
 
-  function confirmShipPlacements() {
+  function getAllShipCoords() {
+    let allCoords = [];
     ships.forEach((ship) => {
-      ship.coords.forEach((coord) => {
-        board[coord[0]][coord[1]].hasShip = true;
-      });
+      allCoords = [...allCoords, ...ship.coords];
     });
+    return allCoords;
   }
+
+  const attackedCoords = [];
 
   function receiveAttack(coord) {
-    board[coord[0]][coord[1]].hasBeenAttacked = true;
-  }
-
-  function resetBoard(resetShips, resetAttacks) {
-    board.forEach((coordY) => {
-      coordY.forEach((coordX) => {
-        if (resetShips) {
-          coordX.hasShip = false;
-        }
-        if (resetAttacks) {
-          coordX.hasBeenAttacked = false;
+    if (coord[0] < 0 || coord[1] < 0 || coord[0] > 9 || coord[1] > 9) {
+      throw new Error("Cannot attack outside of the board.");
+    } else if (arrayContainsCoord(attackedCoords, coord)) {
+      throw new Error("This coordinate has already been hit.");
+    } else {
+      attackedCoords.push(coord);
+      ships.forEach((ship) => {
+        if (arrayContainsCoord(ship.coords, coord)) {
+          ship.hit();
         }
       });
-    });
-  }
-
-  // Helper functions
-
-  function arrayContainsCoord(arr, coord) {
-    return arr.some((otherCoord) => {
-      return JSON.stringify(coord) === JSON.stringify(otherCoord);
-    });
+    }
   }
 
   return {
-    board,
     ships,
+    attackedCoords,
     placePatrolBoat,
     placeSubmarine,
     placeDestroyer,
@@ -181,9 +166,8 @@ function createGameboard() {
     placeBattleshipRandomly,
     placeCarrierRandomly,
     placeAllShipsRandomly,
-    confirmShipPlacements,
+    getAllShipCoords,
     receiveAttack,
-    resetBoard,
   };
 }
 
