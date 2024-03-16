@@ -17,6 +17,10 @@ body {
   background-size: cover;
 }
 
+.displayNone {
+  display: none !important;
+}
+
 .unbold {
   font-weight: normal;
 }
@@ -90,6 +94,7 @@ footer {
 
 #board1,
 #board2 {
+  position: relative;
   display: grid;
   grid-column: 2/12;
   grid-row: 2/12;
@@ -102,6 +107,101 @@ footer {
 .cell {
   background-color: rgba(0, 0, 0, 0.5);
   aspect-ratio: 1;
+  position: relative;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+}
+
+.cell.selected {
+  background-color: rgba(244, 165, 96, 0.8);
+}
+
+.cell.missedCell::after {
+  content: "?";
+  color: white;
+  font-size: 1.5rem;
+}
+
+.cell.hitCell::after {
+  content: "⤫";
+  color: red;
+  font-size: 2rem;
+}
+
+.shipPiece {
+  display: grid;
+  position: absolute;
+  color: white;
+  background-color: silver;
+  border-radius: 50%;
+  border: 2px solid gray;
+  pointer-events: none;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+#board2 .shipPiece {
+  z-index: -10;
+  color: red;
+}
+
+.verticalPiece {
+  writing-mode: vertical-rl;
+}
+
+.patrolBoatPiece {
+  height: 100%;
+  width: 200%;
+}
+
+.patrolBoatPiece.verticalPiece {
+  height: 200%;
+  width: 100%;
+}
+
+.submarinePiece {
+  height: 100%;
+  width: 300%;
+}
+
+.submarinePiece.verticalPiece {
+  height: 300%;
+  width: 100%;
+}
+
+.destroyerPiece {
+  height: 100%;
+  width: 300%;
+}
+
+.destroyerPiece.verticalPiece {
+  height: 300%;
+  width: 100%;
+}
+
+.battleshipPiece {
+  height: 100%;
+  width: 400%;
+}
+
+.battleshipPiece.verticalPiece {
+  height: 400%;
+  width: 100%;
+}
+
+.carrierPiece {
+  height: 100%;
+  width: 500%;
+}
+
+.carrierPiece.verticalPiece {
+  height: 500%;
+  width: 100%;
 }
 
 #eventLogWrapper {
@@ -109,6 +209,7 @@ footer {
   grid-template-rows: auto 1fr;
   gap: 8px;
   margin-bottom: 16px;
+  height: 250px;
   width: 80%;
 }
 
@@ -117,12 +218,48 @@ footer {
 }
 
 #eventLog {
-  border: 2px solid rgba(128, 128, 128, 0.8);
+  display: grid;
+  align-content: start;
+  gap: 8px;
   background-color: rgba(0, 0, 0, 0.8);
+  padding: 8px;
+  overflow-y: scroll;
+}
+
+#eventLog::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#eventLog::-webkit-scrollbar-thumb {
+  background-color: sandybrown;
+}
+
+.event {
+  padding: 8px 16px;
+  border-left: 4px solid sandybrown;
+  border-bottom: 1px solid sandybrown;
+  font-weight: normal;
+  transition: 0.5s ease-out;
+}
+
+.event.errorEvent {
+  color: orangered;
+  border-left: 4px solid orangered;
+  border-bottom: 1px solid orangered;
+}
+
+.event.errorEvent.flashErrorEvent {
+  background-color: orangered;
+}
+
+.event.infoEvent.flashInfoEvent {
+  background-color: sandybrown;
 }
 
 #setUpForm,
 #attackForm {
+  background-color: rgba(0, 0, 0, 0.8);
   display: grid;
   justify-content: center;
   justify-items: center;
@@ -130,7 +267,7 @@ footer {
   align-items: center;
   column-gap: 8px;
   row-gap: 48px;
-  padding: 16px 32px;
+  padding: 32px;
 }
 
 #setUpForm {
@@ -139,8 +276,12 @@ footer {
   bottom: 1.4rem;
   right: 0px;
   width: 50vw;
-  background-color: rgba(0, 0, 0, 0.8);
   align-content: center;
+}
+
+#attackForm {
+  align-self: center;
+  width: 80%;
 }
 
 .coordsLabel {
@@ -188,7 +329,9 @@ input:focus {
 }
 
 #selectShip > label:has(> input:checked) {
-  border: 2px solid sandybrown;
+  background-color: sandybrown;
+  color: black;
+  text-shadow: none;
 }
 
 #randomlyPlaceShip,
