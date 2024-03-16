@@ -3,12 +3,12 @@ function createShip(start, end, length, name) {
     (start[0] === end[0] && start[1] === end[1]) ||
     (start[0] !== end[0] && start[1] !== end[1])
   ) {
-    throw new Error("Coordinates must be vertically or horizontally in line");
+    throw new Error("Coordinates must be vertically or horizontally in line.");
   } else if (
     length !==
     Math.abs(start[0] - end[0]) + Math.abs(start[1] - end[1]) + 1
   ) {
-    throw new Error(`Ship length must be ${length}`);
+    throw new Error(`${name} length must be ${length}.`);
   }
 
   const coords = [];

@@ -84,7 +84,7 @@ test("Coordinates not in line throw an error", () => {
 });
 
 test("Coordinates must create the correct length for the ship", () => {
-  expect(() => createShip([1, 1], [1, 4], 17, "test")).toThrow(
-    "Ship length must be 17"
+  expect(() => createShip([1, 1], [1, 4], 17, "Super Long Ship")).toThrow(
+    "Super Long Ship length must be 17"
   );
 });
