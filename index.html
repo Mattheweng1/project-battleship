@@ -15,20 +15,80 @@
       <div id="boardWrapper1">
         <div id="rowLabelWrapper1"></div>
         <div id="colLabelWrapper1"></div>
-        <div id="board1"></div>
+        <div id="board1">
+          <div
+            shipName="Patrol Boat"
+            class="shipPiece patrolBoatPiece displayNone"
+          >
+            P.B.
+          </div>
+          <div
+            shipName="Submarine"
+            class="shipPiece submarinePiece displayNone"
+          >
+            Submarine
+          </div>
+          <div
+            shipName="Destroyer"
+            class="shipPiece destroyerPiece displayNone"
+          >
+            Destroyer
+          </div>
+          <div
+            shipName="Battleship"
+            class="shipPiece battleshipPiece displayNone"
+          >
+            Battleship
+          </div>
+          <div shipName="Carrier" class="shipPiece carrierPiece displayNone">
+            Carrier
+          </div>
+        </div>
       </div>
       <div id="boardWrapper2">
         <div id="rowLabelWrapper2"></div>
         <div id="colLabelWrapper2"></div>
-        <div id="board2"></div>
+        <div id="board2">
+          <div
+            shipName="Patrol Boat"
+            class="shipPiece patrolBoatPiece displayNone"
+          >
+            P.B.
+          </div>
+          <div
+            shipName="Submarine"
+            class="shipPiece submarinePiece displayNone"
+          >
+            Submarine
+          </div>
+          <div
+            shipName="Destroyer"
+            class="shipPiece destroyerPiece displayNone"
+          >
+            Destroyer
+          </div>
+          <div
+            shipName="Battleship"
+            class="shipPiece battleshipPiece displayNone"
+          >
+            Battleship
+          </div>
+          <div shipName="Carrier" class="shipPiece carrierPiece displayNone">
+            Carrier
+          </div>
+        </div>
       </div>
       <div id="eventLogWrapper">
         <div id="eventLogTitle">Event Log</div>
-        <div id="eventLog"></div>
+        <div id="eventLog">
+          <div class="event infoEvent">
+            Place your ships to complete the set up phase.
+          </div>
+        </div>
       </div>
       <form action="" id="setUpForm">
         <fieldset id="selectShip">
-          <legend>Select a ship:</legend>
+          <legend>Select a ship to place:</legend>
           <label for="patrolBoat">
             <input
               type="radio"
@@ -70,19 +130,21 @@
           Click or enter ship coordinates:
           <input
             type="text"
-            name="shipCoords1"
-            id="shipCoords1"
+            name="shipCoord1"
+            id="shipCoord1"
+            minlength="2"
             maxlength="3"
             size="3"
-            oninput="this.value = this.value.toUpperCase()"
+            required
           />
           <input
             type="text"
-            name="shipCoords2"
-            id="shipCoords2"
+            name="shipCoord2"
+            id="shipCoord2"
+            minlength="2"
             maxlength="3"
             size="3"
-            oninput="this.value = this.value.toUpperCase()"
+            required
           />
           <button type="submit">PLACE SHIP</button>
         </label>
@@ -99,11 +161,11 @@
           Click or enter attack coordinate:
           <input
             type="text"
-            name="attackCoords1"
-            id="attackCoords1"
+            name="attackCoord"
+            id="attackCoord"
             maxlength="3"
             size="3"
-            oninput="this.value = this.value.toUpperCase()"
+            required
           />
           <button type="submit">ATTACK</button>
         </label>
