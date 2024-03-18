@@ -2,37 +2,53 @@ import { createGameboard } from "./gameboard";
 
 test("Placing a ship outside of the matrix throws an error", () => {
   const testGameboard = createGameboard();
-  expect(() => testGameboard.placeCarrier([0, 0], [0, -4])).toThrow(
-    "Ship cannot be placed outside of the board"
+  expect(() => testGameboard.placeCarrier("A1", "A12")).toThrow(
+    "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]."
   );
 });
 
 test("Placing a ship stores the ship in the 'ships' array", () => {
   const testGameboard = createGameboard();
-  testGameboard.placeBattleship([0, 3], [3, 3]);
+  testGameboard.placeBattleship("A4", "D4");
   expect(testGameboard.ships[0].name).toBe("Battleship");
 });
 
 test("Placing a ship overlapping another ship throws an error", () => {
   const testGameboard = createGameboard();
-  testGameboard.placeBattleship([0, 3], [3, 3]);
-  expect(() => testGameboard.placeCarrier([0, 0], [0, 4])).toThrow(
+  testGameboard.placeBattleship("A4", "D4");
+  expect(() => testGameboard.placeCarrier("A1", "A5")).toThrow(
     "Ship cannot be placed atop another ship"
   );
 });
 
 test("Placing a ship with the name of a ship that is already placed will replace that ship, even if it overlaps the old location", () => {
   const testGameboard = createGameboard();
-  testGameboard.placeCarrier([0, 3], [4, 3]);
-  testGameboard.placeCarrier([0, 3], [0, 7]);
+  testGameboard.placeCarrier("A4", "E4");
+  testGameboard.placeCarrier("A4", "A8");
   expect(testGameboard.ships.length).toBe(1);
   expect(testGameboard.ships[0].length).toBe(5);
 });
 
 test("receiveAttack() changes the attackedCoords", () => {
   const testGameboard = createGameboard();
-  testGameboard.receiveAttack([0, 0]);
-  expect(testGameboard.attackedCoords[0]).toEqual([0, 0]);
+  testGameboard.receiveAttack("A1");
+  expect(testGameboard.attackedCoords[0]).toEqual("A1");
+});
+
+test("receiveAttack() with invalid input throws error", () => {
+  const testGameboard = createGameboard();
+  expect(() => testGameboard.receiveAttack("A12")).toThrow(
+    "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]."
+  );
+});
+
+test("receiveAttack() on repeat coord throws error", () => {
+  const testGameboard = createGameboard();
+  testGameboard.receiveAttack("A1");
+  expect(() => testGameboard.receiveAttack("A1")).toThrow(
+    "This coordinate has already been hit."
+  );
+  expect(testGameboard.attackedCoords.length).toEqual(1);
 });
 
 // Testing random ship placements

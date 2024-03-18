@@ -1,23 +1,10 @@
-import { arrayContainsCoord } from "./helper";
+import { arraysHaveOverlap, convertArrToCoord, getRowAndCol } from "./helper";
 import { createShip } from "./ship";
 
 function createGameboard() {
   const ships = [];
 
   function placeShip(start, end, length, name) {
-    if (
-      start[0] < 0 ||
-      start[1] < 0 ||
-      end[0] < 0 ||
-      end[1] < 0 ||
-      start[0] > 9 ||
-      start[1] > 9 ||
-      end[0] > 9 ||
-      end[1] > 9
-    ) {
-      throw new Error("Ship cannot be placed outside of the board");
-    }
-
     const newShip = createShip(start, end, length, name);
 
     const shipCoords = [];
@@ -33,11 +20,7 @@ function createGameboard() {
       });
     });
 
-    if (
-      newShip.coords.some((newCoord) => {
-        return arrayContainsCoord(shipCoords, newCoord);
-      })
-    ) {
+    if (arraysHaveOverlap(newShip.coords, shipCoords)) {
       throw new Error("Ship cannot be placed atop another ship");
     }
 
@@ -78,23 +61,27 @@ function createGameboard() {
     try {
       let x = Math.floor(Math.random() * 10);
       let y = Math.floor(Math.random() * 10);
-      let start = [x, y];
+      let startArr = [x, y];
       let possibleEnds = [];
       possibleEnds.push([x - (length - 1), y]);
       possibleEnds.push([x + (length - 1), y]);
       possibleEnds.push([x, y - (length - 1)]);
       possibleEnds.push([x, y + (length - 1)]);
-      let end = possibleEnds[Math.floor(Math.random() * 4)];
+      let endArr = possibleEnds[Math.floor(Math.random() * 4)];
+
+      const start = convertArrToCoord(startArr);
+      const end = convertArrToCoord(endArr);
 
       placeShip(start, end, length, name);
     } catch (err) {
       if (
-        err.message === "Ship cannot be placed outside of the board" ||
+        err.message ===
+          "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]." ||
         err.message === "Ship cannot be placed atop another ship"
       ) {
         placeShipRandomly(length, name);
       } else {
-        console.error(err);
+        throw new Error(err.message);
       }
     }
   }
@@ -138,18 +125,19 @@ function createGameboard() {
   const attackedCoords = [];
 
   function receiveAttack(coord) {
-    if (coord[0] < 0 || coord[1] < 0 || coord[0] > 9 || coord[1] > 9) {
-      throw new Error("Cannot attack outside of the board.");
-    } else if (arrayContainsCoord(attackedCoords, coord)) {
+    // This is just to throw an error if the argument is not a valid coord
+    getRowAndCol(coord);
+
+    if (attackedCoords.includes(coord)) {
       throw new Error("This coordinate has already been hit.");
-    } else {
-      attackedCoords.push(coord);
-      ships.forEach((ship) => {
-        if (arrayContainsCoord(ship.coords, coord)) {
-          ship.hit();
-        }
-      });
     }
+
+    attackedCoords.push(coord);
+    ships.forEach((ship) => {
+      if (ship.coords.includes(coord)) {
+        ship.hit();
+      }
+    });
   }
 
   return {

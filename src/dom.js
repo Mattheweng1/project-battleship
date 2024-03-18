@@ -1,10 +1,9 @@
 import { createGame } from "./game";
 import { createGameboard } from "./gameboard";
 import {
-  arrayContainsCoord,
   cols,
-  convertCoordToArr,
   flashInfoEvent,
+  getRowAndCol,
   logErrorEvent,
   rows,
 } from "./helper";
@@ -120,8 +119,8 @@ function placeShipEvent() {
     return ship.checked;
   });
 
-  const coord1 = convertCoordToArr(shipCoordInput1.value);
-  const coord2 = convertCoordToArr(shipCoordInput2.value);
+  const coord1 = shipCoordInput1.value;
+  const coord2 = shipCoordInput2.value;
 
   switch (shipChecked.value) {
     case "Patrol Boat":
@@ -271,13 +270,15 @@ let b1Selected2 = [null];
 let b2Selected = [null];
 
 function renderSelected(board, inputElement, selected) {
-  const newValue = inputElement.value;
+  let newSelected;
 
-  const splitCoord = newValue.split("");
-  const letter = splitCoord.shift();
-  const numStr = splitCoord.join("");
+  if (inputElement.value.length < 2) {
+    newSelected = null;
+  } else {
+    const [row, col] = getRowAndCol(inputElement.value);
 
-  const newSelected = board.querySelector(`[row="${letter}"][col="${numStr}"]`);
+    newSelected = board.querySelector(`[row="${row}"][col="${col}"]`);
+  }
 
   if (selected[0] !== null) {
     selected[0].classList.remove("selected");
@@ -327,14 +328,16 @@ function renderShip(ship, board) {
   });
   shipPiece.classList.remove("displayNone");
 
-  const cell = board.querySelector(
-    `[row="${rows[ship.coords[0][0]]}"][col="${cols[ship.coords[0][1]]}"]`
-  );
+  // Get row and col for first ship coord
+  const [row, col] = getRowAndCol(ship.coords[0]);
+
+  const cell = board.querySelector(`[row="${row}"][col="${col}"]`);
 
   cell.appendChild(shipPiece);
 
+  const [row2, col2] = getRowAndCol(ship.coords[1]);
   // If ship orientation is vertical...
-  if (ship.coords[0][0] !== ship.coords[1][0]) {
+  if (row !== row2) {
     shipPiece.classList.add("verticalPiece");
   } else {
     shipPiece.classList.remove("verticalPiece");
@@ -397,8 +400,7 @@ function attackListen() {
 }
 
 function attackEvent() {
-  const attackCoord = convertCoordToArr(attackCoordInput.value);
-  gb2.receiveAttack(attackCoord);
+  gb2.receiveAttack(attackCoordInput.value);
 
   renderAttacks(gb2, board2);
 
@@ -419,20 +421,18 @@ function randomlyAttackEvent() {}
 function renderAttacks(gameboard, board) {
   const allShipCoords = gameboard.getAllShipCoords();
   const hitCoords = gameboard.attackedCoords.filter((coord) => {
-    return arrayContainsCoord(allShipCoords, coord);
+    return allShipCoords.includes(coord);
   });
   const attackedCells = [];
   gameboard.attackedCoords.forEach((coord) => {
-    const cell = board.querySelector(
-      `[row="${rows[coord[0]]}"][col="${cols[coord[1]]}"]`
-    );
+    const [row, col] = getRowAndCol(coord);
+    const cell = board.querySelector(`[row="${row}"][col="${col}"]`);
     attackedCells.push(cell);
   });
   const hitCells = [];
   hitCoords.forEach((coord) => {
-    const cell = board.querySelector(
-      `[row="${rows[coord[0]]}"][col="${cols[coord[1]]}"]`
-    );
+    const [row, col] = getRowAndCol(coord);
+    const cell = board.querySelector(`[row="${row}"][col="${col}"]`);
     hitCells.push(cell);
   });
   attackedCells.forEach((cell) => {

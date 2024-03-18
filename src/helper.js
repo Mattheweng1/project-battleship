@@ -3,37 +3,48 @@
 const rows = "ABCDEFGHIJ".split("");
 const cols = "1,2,3,4,5,6,7,8,9,10".split(",");
 
-// Checks if a coord exists within an array of coords
+// Checks if arrays have any overlap and returns a boolean
 
-function arrayContainsCoord(arr, coord) {
-  return arr.some((otherCoord) => {
-    return JSON.stringify(coord) === JSON.stringify(otherCoord);
-  });
+function arraysHaveOverlap(arr1, arr2) {
+  return [...new Set(arr1.concat(arr2))].length !== arr1.concat(arr2).length;
+}
+
+// Convert array of indices to letter-number coord
+
+function convertArrToCoord(coordArr) {
+  return rows[coordArr[0]] + cols[coordArr[1]];
 }
 
 // Convert letter-number coordinate to array of indices ([0-9, 0-9])
 
 function convertCoordToArr(coord) {
+  const [row, col] = getRowAndCol(coord);
+
+  const coordArr = [];
+  coordArr.push(rows.indexOf(row));
+  coordArr.push(cols.indexOf(col));
+  return coordArr;
+}
+
+function getRowAndCol(coord) {
   const splitCoord = coord.split("");
-  const letter = splitCoord.shift();
-  const numStr = splitCoord.join("");
-  if (!isRowLetter(letter) || !isColNumStr(numStr)) {
+  const row = splitCoord.shift();
+  const col = splitCoord.join("");
+
+  if (!isRow(row) || !isCol(col)) {
     throw new Error(
       "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]."
     );
-  } else {
-    const coordArr = [];
-    coordArr.push(rows.indexOf(letter));
-    coordArr.push(cols.indexOf(`${numStr}`));
-    return coordArr;
   }
+
+  return [row, col];
 }
 
-function isRowLetter(str) {
+function isRow(str) {
   return str.length === 1 && str.match(/[A-J]/i);
 }
 
-function isColNumStr(numStr) {
+function isCol(numStr) {
   if (numStr.length === 1) {
     return numStr.match(/\d/);
   } else if (numStr.length === 2) {
@@ -82,8 +93,10 @@ function flashInfoEvent() {
 export {
   rows,
   cols,
-  arrayContainsCoord,
+  arraysHaveOverlap,
+  convertArrToCoord,
   convertCoordToArr,
+  getRowAndCol,
   logErrorEvent,
   flashInfoEvent,
 };

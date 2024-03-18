@@ -1,33 +1,38 @@
+import { convertArrToCoord, convertCoordToArr } from "./helper";
+
 function createShip(start, end, length, name) {
+  const startArr = convertCoordToArr(start);
+  const endArr = convertCoordToArr(end);
+
   if (
-    (start[0] === end[0] && start[1] === end[1]) ||
-    (start[0] !== end[0] && start[1] !== end[1])
+    (startArr[0] === endArr[0] && startArr[1] === endArr[1]) ||
+    (startArr[0] !== endArr[0] && startArr[1] !== endArr[1])
   ) {
     throw new Error("Coordinates must be vertically or horizontally in line.");
   } else if (
     length !==
-    Math.abs(start[0] - end[0]) + Math.abs(start[1] - end[1]) + 1
+    Math.abs(startArr[0] - endArr[0]) + Math.abs(startArr[1] - endArr[1]) + 1
   ) {
     throw new Error(`${name} length must be ${length}.`);
   }
 
   const coords = [];
 
-  if (start[0] < end[0]) {
-    for (let i = start[0]; i <= end[0]; i++) {
-      coords.push([i, start[1]]);
+  if (startArr[0] < endArr[0]) {
+    for (let i = startArr[0]; i <= endArr[0]; i++) {
+      coords.push(convertArrToCoord([i, startArr[1]]));
     }
-  } else if (end[0] < start[0]) {
-    for (let i = end[0]; i <= start[0]; i++) {
-      coords.push([i, end[1]]);
+  } else if (endArr[0] < startArr[0]) {
+    for (let i = endArr[0]; i <= startArr[0]; i++) {
+      coords.push(convertArrToCoord([i, endArr[1]]));
     }
-  } else if (start[1] < end[1]) {
-    for (let i = start[1]; i <= end[1]; i++) {
-      coords.push([start[0], i]);
+  } else if (startArr[1] < endArr[1]) {
+    for (let i = startArr[1]; i <= endArr[1]; i++) {
+      coords.push(convertArrToCoord([startArr[0], i]));
     }
-  } else if (end[1] < start[1]) {
-    for (let i = end[1]; i <= start[1]; i++) {
-      coords.push([end[0], i]);
+  } else if (endArr[1] < startArr[1]) {
+    for (let i = endArr[1]; i <= startArr[1]; i++) {
+      coords.push(convertArrToCoord([endArr[0], i]));
     }
   }
 
