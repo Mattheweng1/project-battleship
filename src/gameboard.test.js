@@ -1,5 +1,7 @@
 import { createGameboard } from "./gameboard";
 
+// Testing ship placements
+
 test("Placing a ship outside of the matrix throws an error", () => {
   const testGameboard = createGameboard();
   expect(() => testGameboard.placeCarrier("A1", "A12")).toThrow(
@@ -27,28 +29,6 @@ test("Placing a ship with the name of a ship that is already placed will replace
   testGameboard.placeCarrier("A4", "A8");
   expect(testGameboard.ships.length).toBe(1);
   expect(testGameboard.ships[0].length).toBe(5);
-});
-
-test("receiveAttack() changes the attackedCoords", () => {
-  const testGameboard = createGameboard();
-  testGameboard.receiveAttack("A1");
-  expect(testGameboard.attackedCoords[0]).toEqual("A1");
-});
-
-test("receiveAttack() with invalid input throws error", () => {
-  const testGameboard = createGameboard();
-  expect(() => testGameboard.receiveAttack("A12")).toThrow(
-    "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]."
-  );
-});
-
-test("receiveAttack() on repeat coord throws error", () => {
-  const testGameboard = createGameboard();
-  testGameboard.receiveAttack("A1");
-  expect(() => testGameboard.receiveAttack("A1")).toThrow(
-    "This coordinate has already been hit."
-  );
-  expect(testGameboard.attackedCoords.length).toEqual(1);
 });
 
 // Testing random ship placements
@@ -95,4 +75,52 @@ test("Calling placeAllShipsRandomly(), and then getting all ship coords returns 
   const testGameboard = createGameboard();
   testGameboard.placeAllShipsRandomly();
   expect(testGameboard.getAllShipCoords().length).toBe(17);
+});
+
+// Attack related tests
+
+test("neverAttackedCoord starts with all coords on the board", () => {
+  const testGameboard = createGameboard();
+  expect(testGameboard.neverAttackedCoords.length).toEqual(100);
+  expect(testGameboard.neverAttackedCoords[0]).toEqual("A1");
+  expect(testGameboard.neverAttackedCoords[99]).toEqual("J10");
+});
+
+test("receiveAttack() removes coord from neverAttackedCoords", () => {
+  const testGameboard = createGameboard();
+  testGameboard.receiveAttack("A1");
+  expect(testGameboard.neverAttackedCoords.length).toEqual(99);
+  expect(testGameboard.neverAttackedCoords.includes("A1")).toEqual(false);
+});
+
+test("receiveAttack() adds coord to attackedCoords", () => {
+  const testGameboard = createGameboard();
+  testGameboard.receiveAttack("A1");
+  expect(testGameboard.attackedCoords[0]).toEqual("A1");
+});
+
+test("receiveAttack() with invalid input throws error", () => {
+  const testGameboard = createGameboard();
+  expect(() => testGameboard.receiveAttack("A12")).toThrow(
+    "Must enter a letter A-J followed by a number 1-10 for each coordinate like [ C7 ] or [ J10 ]."
+  );
+});
+
+test("receiveAttack() on repeat coord throws error", () => {
+  const testGameboard = createGameboard();
+  testGameboard.receiveAttack("A1");
+  expect(() => testGameboard.receiveAttack("A1")).toThrow(
+    "This coordinate has already been hit."
+  );
+  expect(testGameboard.attackedCoords.length).toEqual(1);
+});
+
+test("receiveAttackRandomly() attacks random coord", () => {
+  const testGameboard = createGameboard();
+  testGameboard.receiveAttackRandomly();
+  expect(testGameboard.attackedCoords.length).toEqual(1);
+  for (let i = 0; i < 98; i++) {
+    testGameboard.receiveAttackRandomly();
+  }
+  expect(testGameboard.attackedCoords.length).toEqual(99);
 });

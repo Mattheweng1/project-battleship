@@ -1,4 +1,10 @@
-import { arraysHaveOverlap, convertArrToCoord, getRowAndCol } from "./helper";
+import {
+  arraysHaveOverlap,
+  cols,
+  convertArrToCoord,
+  getRowAndCol,
+  rows,
+} from "./helper";
 import { createShip } from "./ship";
 
 function createGameboard() {
@@ -122,6 +128,13 @@ function createGameboard() {
     return allCoords;
   }
 
+  const neverAttackedCoords = [];
+  // Starts with every coord on the board
+  for (const row of rows) {
+    for (const col of cols) {
+      neverAttackedCoords.push(row + col);
+    }
+  }
   const attackedCoords = [];
 
   function receiveAttack(coord) {
@@ -138,11 +151,19 @@ function createGameboard() {
         ship.hit();
       }
     });
+    neverAttackedCoords.splice(neverAttackedCoords.indexOf(coord), 1);
+  }
+
+  function receiveAttackRandomly() {
+    const randomCoord =
+      neverAttackedCoords[
+        Math.floor(neverAttackedCoords.length * Math.random())
+      ];
+    receiveAttack(randomCoord);
   }
 
   return {
     ships,
-    attackedCoords,
     placePatrolBoat,
     placeSubmarine,
     placeDestroyer,
@@ -155,7 +176,10 @@ function createGameboard() {
     placeCarrierRandomly,
     placeAllShipsRandomly,
     getAllShipCoords,
+    neverAttackedCoords,
+    attackedCoords,
     receiveAttack,
+    receiveAttackRandomly,
   };
 }
 

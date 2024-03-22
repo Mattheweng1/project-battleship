@@ -414,7 +414,14 @@ function randomlyAttackListen() {
   randomlyAttackBtn.addEventListener("click", randomlyAttackEvent);
 }
 
-function randomlyAttackEvent() {}
+function randomlyAttackEvent() {
+  gb2.receiveAttackRandomly();
+
+  renderAttacks(gb2, board2);
+
+  attackCoordInput.value = "";
+  renderSelected(board2, attackCoordInput, b2Selected);
+}
 
 // Render hit and missed attacks on board
 
