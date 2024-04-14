@@ -130,11 +130,15 @@ function createGameboard() {
 
   const neverAttackedCoords = [];
   // Starts with every coord on the board
-  for (const row of rows) {
-    for (const col of cols) {
-      neverAttackedCoords.push(row + col);
+  function resetNeverAttackedCoords() {
+    neverAttackedCoords.length = 0;
+    for (const row of rows) {
+      for (const col of cols) {
+        neverAttackedCoords.push(row + col);
+      }
     }
   }
+  resetNeverAttackedCoords();
   const attackedCoords = [];
 
   function receiveAttack(coord) {
@@ -146,12 +150,22 @@ function createGameboard() {
     }
 
     attackedCoords.push(coord);
-    ships.forEach((ship) => {
+    neverAttackedCoords.splice(neverAttackedCoords.indexOf(coord), 1);
+
+    let outputMsg = "";
+    for (const ship of ships) {
       if (ship.coords.includes(coord)) {
         ship.hit();
+        if (ship.isSunk()) {
+          outputMsg = `sunk the ${ship.name}!`;
+        } else {
+          outputMsg = "landed a successful hit on a ship!";
+        }
+        break;
       }
-    });
-    neverAttackedCoords.splice(neverAttackedCoords.indexOf(coord), 1);
+    }
+
+    return outputMsg ? outputMsg : "missed.";
   }
 
   function receiveAttackRandomly() {
@@ -159,7 +173,13 @@ function createGameboard() {
       neverAttackedCoords[
         Math.floor(neverAttackedCoords.length * Math.random())
       ];
-    receiveAttack(randomCoord);
+    return receiveAttack(randomCoord);
+  }
+
+  function resetGameboard() {
+    ships.length = 0;
+    resetNeverAttackedCoords();
+    attackedCoords.length = 0;
   }
 
   return {
@@ -180,6 +200,7 @@ function createGameboard() {
     attackedCoords,
     receiveAttack,
     receiveAttackRandomly,
+    resetGameboard,
   };
 }
 

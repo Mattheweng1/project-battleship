@@ -99,6 +99,16 @@ test("receiveAttack() adds coord to attackedCoords", () => {
   expect(testGameboard.attackedCoords[0]).toEqual("A1");
 });
 
+test("receiveAttack() returns output message", () => {
+  const testGameboard = createGameboard();
+  expect(testGameboard.receiveAttack("A1")).toEqual("missed.");
+  testGameboard.placePatrolBoat("A2", "A3");
+  expect(testGameboard.receiveAttack("A2")).toEqual(
+    "landed a successful hit on a ship!"
+  );
+  expect(testGameboard.receiveAttack("A3")).toEqual("sunk the Patrol Boat!");
+});
+
 test("receiveAttack() with invalid input throws error", () => {
   const testGameboard = createGameboard();
   expect(() => testGameboard.receiveAttack("A12")).toThrow(
@@ -123,4 +133,21 @@ test("receiveAttackRandomly() attacks random coord", () => {
     testGameboard.receiveAttackRandomly();
   }
   expect(testGameboard.attackedCoords.length).toEqual(99);
+});
+
+// resetGameboard() tests
+
+test("resetGameboard() resets ships, neverAttackedCoords, and attackedCoords", () => {
+  const testGameboard = createGameboard();
+  testGameboard.placeAllShipsRandomly();
+  expect(testGameboard.ships.length).toEqual(5);
+  for (let i = 0; i < 30; i++) {
+    testGameboard.receiveAttackRandomly();
+  }
+  expect(testGameboard.attackedCoords.length).toEqual(30);
+  expect(testGameboard.neverAttackedCoords.length).toEqual(70);
+  testGameboard.resetGameboard();
+  expect(testGameboard.ships.length).toEqual(0);
+  expect(testGameboard.attackedCoords.length).toEqual(0);
+  expect(testGameboard.neverAttackedCoords.length).toEqual(100);
 });
