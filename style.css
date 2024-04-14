@@ -15,6 +15,38 @@ body {
   font-weight: bold;
   background-image: url("./images/water-bg-conor-sexton-unsplash.jpg");
   background-size: cover;
+  position: relative;
+}
+
+.modal {
+  position: fixed;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 2;
+}
+
+.modalBox {
+  justify-self: center;
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  height: 60%;
+  width: 60%;
+  background-color: silver;
+  border: 2px solid black;
+  outline: 2px solid sandybrown;
+  padding: 50px 100px;
+  text-align: center;
+  line-height: 200%;
+  font-size: 1.2rem;
+}
+
+.modalTitle {
+  font-size: 3rem;
+  text-shadow: 2px 2px 2px sandybrown;
 }
 
 .displayNone {
@@ -28,15 +60,25 @@ body {
 header,
 footer {
   background-color: rgba(192, 192, 192, 0.3);
-  z-index: 10;
+  z-index: 1;
 }
 
 header {
   display: grid;
-  justify-content: center;
+  justify-items: center;
   font-size: 1.4rem;
   padding: 8px 16px;
   height: 3rem;
+}
+
+header > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+#surrender {
+  font-size: 1rem;
 }
 
 footer {
@@ -46,6 +88,7 @@ footer {
 }
 
 .content {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto 1fr;
@@ -127,6 +170,7 @@ footer {
   content: "⤫";
   color: red;
   font-size: 2rem;
+  z-index: 1;
 }
 
 .shipPiece {
@@ -142,11 +186,11 @@ footer {
   align-content: center;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 1;
 }
 
 #board2 .shipPiece {
-  z-index: -10;
+  z-index: -1;
   color: red;
 }
 
@@ -249,11 +293,21 @@ footer {
   border-bottom: 1px solid orangered;
 }
 
-.event.errorEvent.flashErrorEvent {
+.event.turnEvent {
+  color: skyblue;
+  border-left: 4px solid skyblue;
+  border-bottom: 1px solid skyblue;
+}
+
+.event.errorEvent.flash {
   background-color: orangered;
 }
 
-.event.infoEvent.flashInfoEvent {
+.event.turnEvent.flash {
+  background-color: skyblue;
+}
+
+.event.infoEvent.flash {
   background-color: sandybrown;
 }
 
@@ -272,9 +326,9 @@ footer {
 
 #setUpForm {
   position: absolute;
-  top: 3rem;
-  bottom: 1.4rem;
-  right: 0px;
+  top: 0;
+  bottom: 0;
+  right: 0;
   width: 50vw;
   align-content: center;
 }

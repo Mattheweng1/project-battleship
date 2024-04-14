@@ -8,7 +8,22 @@
     <title>Battleship</title>
   </head>
   <body>
-    <header>Battleship</header>
+    <div id="gameOverModal" class="modal displayNone">
+      <div class="modalBox">
+        <div class="modalTitle">Game over!</div>
+        <div id="modalResult"></div>
+        <div>
+          Maybe this result was inevitable... <br />Care to play another?
+        </div>
+        <button type="button" id="anotherGame">ANOTHER</button>
+      </div>
+    </div>
+    <header>
+      <div>
+        <div>Battleship</div>
+        <button type="button" id="surrender">SURRENDER</button>
+      </div>
+    </header>
     <div class="content">
       <div id="player1" class="playerName">Player</div>
       <div id="player2" class="playerName">Computer</div>
