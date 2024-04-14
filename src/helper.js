@@ -52,7 +52,7 @@ function isCol(numStr) {
   }
 }
 
-// Log error message in Event Log
+// Log messages in Event Log
 
 function logErrorEvent(errMsg) {
   const errorEvents = document.querySelectorAll(".errorEvent");
@@ -61,33 +61,45 @@ function logErrorEvent(errMsg) {
   });
   if (oldErrorEvent) {
     eventLog.prepend(oldErrorEvent);
-    flashErrorEvent();
+    flashClassEvent("errorEvent");
   } else {
     const newErrorEvent = document.createElement("div");
     newErrorEvent.classList.add("event");
     newErrorEvent.classList.add("errorEvent");
     newErrorEvent.textContent = errMsg;
     eventLog.prepend(newErrorEvent);
-    flashErrorEvent();
+    flashClassEvent("errorEvent");
   }
+}
+
+function logTurnEvent(turn, msg) {
+  const newTurnEvent = document.createElement("div");
+  newTurnEvent.classList.add("event");
+  newTurnEvent.classList.add("turnEvent");
+  newTurnEvent.innerText = turn + "  :  " + msg;
+  eventLog.prepend(newTurnEvent);
+  flashClassEvent("turnEvent");
+}
+
+function logInfoEvent(msg) {
+  const newInfoEvent = document.createElement("div");
+  newInfoEvent.classList.add("event");
+  newInfoEvent.classList.add("infoEvent");
+  newInfoEvent.innerText = msg;
+  eventLog.prepend(newInfoEvent);
+  flashClassEvent("infoEvent");
 }
 
 // Flash Event Log messages
 
-function flashErrorEvent() {
-  const firstErrorEvent = document.querySelector(".errorEvent");
-  firstErrorEvent.classList.add("flashErrorEvent");
+function flashClassEvent(className) {
+  const firstClassEvent = document.querySelector("." + className);
+  eventLog.prepend(firstClassEvent);
+  firstClassEvent.classList.add("flash");
   setTimeout(() => {
-    firstErrorEvent.classList.remove("flashErrorEvent");
+    firstClassEvent.classList.remove("flash");
   }, 100);
-}
-
-function flashInfoEvent() {
-  const firstInfoEvent = document.querySelector(".infoEvent");
-  firstInfoEvent.classList.add("flashInfoEvent");
-  setTimeout(() => {
-    firstInfoEvent.classList.remove("flashInfoEvent");
-  }, 100);
+  firstClassEvent.scrollIntoView(false);
 }
 
 export {
@@ -98,5 +110,7 @@ export {
   convertCoordToArr,
   getRowAndCol,
   logErrorEvent,
-  flashInfoEvent,
+  logTurnEvent,
+  logInfoEvent,
+  flashClassEvent,
 };

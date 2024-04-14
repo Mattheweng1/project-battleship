@@ -2,9 +2,11 @@ import { createGame } from "./game";
 import { createGameboard } from "./gameboard";
 import {
   cols,
-  flashInfoEvent,
+  flashClassEvent,
   getRowAndCol,
   logErrorEvent,
+  logInfoEvent,
+  logTurnEvent,
   rows,
 } from "./helper";
 import { createPlayer } from "./player";
@@ -20,8 +22,6 @@ const colLabelWrapper1 = document.getElementById("colLabelWrapper1");
 const rowLabelWrapper2 = document.getElementById("rowLabelWrapper2");
 const colLabelWrapper2 = document.getElementById("colLabelWrapper2");
 
-const eventLog = document.getElementById("eventLog");
-
 const shipOptions = document.getElementsByName("ship");
 
 const shipCoordInput1 = document.getElementById("shipCoord1");
@@ -36,8 +36,14 @@ const randomlyPlaceAllShipsBtn = document.getElementById(
 );
 const startGameBtn = document.getElementById("startGame");
 
+const surrenderBtn = document.getElementById("surrender");
+const anotherGameBtn = document.getElementById("anotherGame");
+
 const attackForm = document.getElementById("attackForm");
 const randomlyAttackBtn = document.getElementById("randomlyAttack");
+
+const modalResult = document.getElementById("modalResult");
+const gameOverModal = document.getElementById("gameOverModal");
 
 // Render gameboards
 
@@ -55,8 +61,6 @@ function renderBoards() {
       const b2Cell = document.createElement("div");
       b1Cell.classList.add("cell");
       b2Cell.classList.add("cell");
-      b1Cell.classList.add("neverAttackedCell");
-      b2Cell.classList.add("neverAttackedCell");
       b1Cell.setAttribute("row", rows[i]);
       b2Cell.setAttribute("row", rows[i]);
       b1Cell.setAttribute("col", cols[j]);
@@ -96,6 +100,8 @@ function initListeners() {
   inputToUpperCaseListen();
   renderSelectedCoordListen();
   startGameListen();
+  newGameListen();
+  surrenderListen();
   clickAttackCoordListen();
   attackListen();
   randomlyAttackListen();
@@ -299,6 +305,13 @@ function renderAllShipsOnBoard(gameboard, board) {
   });
 }
 
+function unrenderAllShips() {
+  const shipPieces = document.querySelectorAll(".shipPiece");
+  for (const shipPiece of shipPieces) {
+    shipPiece.classList.add("displayNone");
+  }
+}
+
 function renderAnyShip(ship, board) {
   switch (ship.name) {
     case "Patrol Boat":
@@ -351,21 +364,49 @@ function startGameListen() {
 }
 
 function startGameEvent() {
-  const infoEvents = document.querySelectorAll(".infoEvent");
-  const oldInfoEvent = [...infoEvents].find((infoEvent) => {
-    return (
-      infoEvent.innerText === "Place your ships to complete the set up phase."
-    );
-  });
-
   if (gb1.ships.length !== 5) {
-    eventLog.prepend(oldInfoEvent);
-    flashInfoEvent();
+    flashClassEvent("infoEvent");
   } else {
     gb2.placeAllShipsRandomly();
     renderAllShipsOnBoard(gb2, board2);
     setUpForm.classList.add("displayNone");
+    logInfoEvent("The game has begun. Make your move.");
+    game.setupPhase = false;
   }
+}
+
+// New Game event listener
+
+function newGameListen() {
+  anotherGameBtn.addEventListener("click", newGameEvent);
+}
+
+function newGameEvent() {
+  gameOverModal.classList.add("displayNone");
+  unrenderAllShips();
+  unrenderAllAttacks();
+  setUpForm.classList.remove("displayNone");
+  // Clearing textContent clears all children
+  eventLog.textContent = "";
+  logInfoEvent("Place your ships to complete the set up phase.");
+  game.resetGame();
+}
+
+// Surrender event listener
+
+function surrenderListen() {
+  surrenderBtn.addEventListener("click", surrenderEvent);
+}
+
+function surrenderEvent() {
+  if (game.setupPhase) {
+    modalResult.innerText =
+      "Who knew you could surrender before the game even starts? This is clearly the profound outcome of humanity's free will and desire to break the mold.";
+  } else {
+    modalResult.innerText =
+      "How pitiful, humanity surrendering to its own creation. The Singularity grows ever closer.";
+  }
+  gameOverModal.classList.remove("displayNone");
 }
 
 // Click coord to add input value for attack
@@ -392,32 +433,36 @@ function attackListen() {
   attackForm.addEventListener("submit", (e) => {
     e.preventDefault();
     try {
-      attackEvent();
+      attackEvent(false);
     } catch (err) {
       logErrorEvent(err.message);
     }
   });
 }
 
-function attackEvent() {
-  gb2.receiveAttack(attackCoordInput.value);
-
-  renderAttacks(gb2, board2);
-
-  attackCoordInput.value = "";
-  renderSelected(board2, attackCoordInput, b2Selected);
-}
-
-// Randomly Attack event listener
-
 function randomlyAttackListen() {
-  randomlyAttackBtn.addEventListener("click", randomlyAttackEvent);
+  randomlyAttackBtn.addEventListener("click", () => {
+    try {
+      attackEvent(true);
+    } catch (err) {
+      logErrorEvent(err.message);
+    }
+  });
 }
 
-function randomlyAttackEvent() {
-  gb2.receiveAttackRandomly();
+function attackEvent(random) {
+  const output = game.playerAttacksComputer(random, attackCoordInput.value);
+
+  if (typeof output === "string") {
+    logTurnEvent(game.turn, output);
+    modalResult.innerText = output;
+    gameOverModal.classList.remove("displayNone");
+  } else {
+    logTurnEvent(game.turn, output[0] + " " + output[1]);
+  }
 
   renderAttacks(gb2, board2);
+  renderAttacks(gb1, board1);
 
   attackCoordInput.value = "";
   renderSelected(board2, attackCoordInput, b2Selected);
@@ -443,13 +488,23 @@ function renderAttacks(gameboard, board) {
     hitCells.push(cell);
   });
   attackedCells.forEach((cell) => {
-    cell.classList.remove("neverAttackedCell");
     cell.classList.add("missedCell");
   });
   hitCells.forEach((cell) => {
     cell.classList.remove("missedCell");
     cell.classList.add("hitCell");
   });
+}
+
+function unrenderAllAttacks() {
+  const allMissedCells = document.querySelectorAll(".missedCell");
+  const allHitCells = document.querySelectorAll(".hitCell");
+  for (const missedCell of allMissedCells) {
+    missedCell.classList.remove("missedCell");
+  }
+  for (const hitCell of allHitCells) {
+    hitCell.classList.remove("hitCell");
+  }
 }
 
 export { renderBoards, initListeners, game };
