@@ -52,6 +52,24 @@ function isCol(numStr) {
   }
 }
 
+function getAdjacentCoords(coord) {
+  const coordArr = convertCoordToArr(coord);
+  const adjacentCoords = [];
+  if (coordArr[0] > 0) {
+    adjacentCoords.push(rows[coordArr[0] - 1] + cols[coordArr[1]]);
+  }
+  if (coordArr[0] < 9) {
+    adjacentCoords.push(rows[coordArr[0] + 1] + cols[coordArr[1]]);
+  }
+  if (coordArr[1] > 0) {
+    adjacentCoords.push(rows[coordArr[0]] + cols[coordArr[1] - 1]);
+  }
+  if (coordArr[1] < 9) {
+    adjacentCoords.push(rows[coordArr[0]] + cols[coordArr[1] + 1]);
+  }
+  return adjacentCoords;
+}
+
 // Log messages in Event Log
 
 function logErrorEvent(errMsg) {
@@ -109,6 +127,7 @@ export {
   convertArrToCoord,
   convertCoordToArr,
   getRowAndCol,
+  getAdjacentCoords,
   logErrorEvent,
   logTurnEvent,
   logInfoEvent,
