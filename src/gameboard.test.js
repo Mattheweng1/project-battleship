@@ -120,7 +120,7 @@ test("receiveAttack() on repeat coord throws error", () => {
   const testGameboard = createGameboard();
   testGameboard.receiveAttack("A1");
   expect(() => testGameboard.receiveAttack("A1")).toThrow(
-    "This coordinate has already been hit."
+    "[ A1 ] has already been hit."
   );
   expect(testGameboard.attackedCoords.length).toEqual(1);
 });
@@ -133,6 +133,28 @@ test("receiveAttackRandomly() attacks random coord", () => {
     testGameboard.receiveAttackRandomly();
   }
   expect(testGameboard.attackedCoords.length).toEqual(99);
+});
+
+// receiveAttackWithProbabilityMap() tests
+// Composed of functions tested in helper.js
+
+test("receiveAttackWithProbabilityMap() successfully attacks coords", () => {
+  const testGameboard = createGameboard();
+  for (let i = 0; i < 9; i++) {
+    testGameboard.receiveAttackWithProbabilityMap();
+  }
+  expect(testGameboard.attackedCoords.length).toEqual(9);
+});
+
+test("receiveAttackWithProbabilityMap() successfully finishes ships after hitting", () => {
+  for (let j = 0; j < 49; j++) {
+    const testGameboard = createGameboard();
+    testGameboard.placeCarrier("E5", "E9");
+    for (let i = 0; i < 9; i++) {
+      testGameboard.receiveAttackWithProbabilityMap();
+    }
+    expect(testGameboard.ships[0].isSunk()).toEqual(true);
+  }
 });
 
 // resetGameboard() tests
