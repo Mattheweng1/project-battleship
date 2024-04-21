@@ -1,3 +1,5 @@
+import { createShip } from "./ship";
+
 // Arrays of the rows and cols as labeled on the boards
 
 const rows = "ABCDEFGHIJ".split("");
@@ -70,6 +72,196 @@ function getAdjacentCoords(coord) {
   return adjacentCoords;
 }
 
+// Probability Mapping
+// TODO: Move functions to helper.js, then add tests.
+const possibleShips = [];
+
+function resetPossibleShips() {
+  possibleShips.length = 0;
+  addShipPossibilities(2, "Patrol Boat");
+  addShipPossibilities(3, "Submarine");
+  addShipPossibilities(3, "Destroyer");
+  addShipPossibilities(4, "Battleship");
+  addShipPossibilities(5, "Carrier");
+}
+
+function addShipPossibilities(length, name) {
+  addHorizontalPossibilities(length, name);
+  addVerticalPossibilities(length, name);
+}
+
+function addHorizontalPossibilities(length, name) {
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 11 - length; j++) {
+      possibleShips.push(
+        createShip(
+          rows[i] + cols[j],
+          rows[i] + cols[j + length - 1],
+          length,
+          name
+        )
+      );
+    }
+  }
+}
+
+function addVerticalPossibilities(length, name) {
+  for (let i = 0; i < 11 - length; i++) {
+    for (let j = 0; j < 10; j++) {
+      possibleShips.push(
+        createShip(
+          rows[i] + cols[j],
+          rows[i + length - 1] + cols[j],
+          length,
+          name
+        )
+      );
+    }
+  }
+}
+function reducePossibleShips(coord) {
+  const removedPossibleShips = [];
+  const shipsForRemoval = [];
+  for (const ship of possibleShips) {
+    if (ship.coords.includes(coord)) {
+      removedPossibleShips.push(ship);
+      shipsForRemoval.push(ship);
+    }
+  }
+  for (const ship of shipsForRemoval) {
+    possibleShips.splice(possibleShips.indexOf(ship), 1);
+  }
+  return removedPossibleShips;
+}
+
+let probabilityMap;
+
+function resetProbabilityMap() {
+  resetPossibleShips();
+  probabilityMap = generateProbabilityMap(possibleShips);
+}
+resetProbabilityMap();
+
+function generateProbabilityMap(pShips) {
+  const pMap = [];
+  for (const ship of pShips) {
+    for (const coord of ship.coords) {
+      let coordCounter;
+      if (pMap.length > 0) {
+        coordCounter = pMap.find((coordCounter) => {
+          return coordCounter.coord === coord;
+        });
+      } else {
+        coordCounter = undefined;
+      }
+      if (coordCounter) {
+        coordCounter.count++;
+      } else {
+        pMap.push({ coord: coord, count: 1 });
+      }
+    }
+  }
+  return pMap;
+}
+
+function reduceProbabilityMap(coord) {
+  const removedPossibleShips = reducePossibleShips(coord);
+  for (const ship of removedPossibleShips) {
+    for (const coord of ship.coords) {
+      const coordCounter = probabilityMap.find((coordCounter) => {
+        return coordCounter.coord === coord;
+      });
+      if (coordCounter) {
+        if (coordCounter.count > 1) {
+          coordCounter.count--;
+        } else {
+          probabilityMap.splice(probabilityMap.indexOf(coordCounter), 1);
+        }
+      } else {
+        throw new Error("Could not find coordCounter in probabilityMap.");
+      }
+    }
+  }
+}
+
+const hitList = [];
+
+let finisherMap = [];
+
+function generateFinisherMap() {
+  const possibleFinisherShips = possibleShips.filter((ship) => {
+    for (const hitCoord of hitList) {
+      if (ship.coords.includes(hitCoord)) {
+        return true;
+      }
+    }
+    return false;
+  });
+  const fMap = generateProbabilityMap(possibleFinisherShips);
+  let adjacentCoords = [];
+  for (const hitCoord of hitList) {
+    adjacentCoords = adjacentCoords.concat(getAdjacentCoords(hitCoord));
+  }
+  adjacentCoords = adjacentCoords.filter((coord) => {
+    return !hitList.includes(coord);
+  });
+  for (const coord of adjacentCoords) {
+    const coordCounter = fMap.find((coordCounter) => {
+      return coordCounter.coord === coord;
+    });
+    if (coordCounter) {
+      coordCounter.count += 1000;
+    }
+  }
+  if (hitList.length > 1) {
+    const rowOrColCounters = [];
+    for (const hitCoord of hitList) {
+      const [row, col] = getRowAndCol(hitCoord);
+      const rowCounter = rowOrColCounters.find((counter) => {
+        return counter.rowOrCol === row;
+      });
+      const colCounter = rowOrColCounters.find((counter) => {
+        return counter.rowOrCol === col;
+      });
+      if (rowCounter) {
+        rowCounter.count++;
+      } else {
+        rowOrColCounters.push({ rowOrCol: row, count: 1 });
+      }
+      if (colCounter) {
+        colCounter.count++;
+      } else {
+        rowOrColCounters.push({ rowOrCol: col, count: 1 });
+      }
+    }
+    const multipleRowOrColCounters = rowOrColCounters.filter((counter) => {
+      return counter.count > 1;
+    });
+    for (const counter of multipleRowOrColCounters) {
+      for (const coordCounter of fMap) {
+        const [row, col] = getRowAndCol(coordCounter.coord);
+        if (row === counter.rowOrCol || col === counter.rowOrCol) {
+          coordCounter.count += 100;
+        }
+      }
+    }
+  }
+  return fMap;
+}
+
+function getAttackCoordFromMap(pMap) {
+  // Find coords with most possible hits
+  pMap.sort((a, b) => a.count - b.count);
+  const highestCount = pMap[pMap.length - 1].count;
+  const highestCoordCounters = pMap.filter((coordCounter) => {
+    return coordCounter.count === highestCount;
+  });
+  // Randomly choose coord from coords with most hits
+  return highestCoordCounters[
+    Math.floor(Math.random() * highestCoordCounters.length)
+  ].coord;
+}
+
 // Log messages in Event Log
 
 function logErrorEvent(errMsg) {
@@ -128,6 +320,16 @@ export {
   convertCoordToArr,
   getRowAndCol,
   getAdjacentCoords,
+  // Probability Mapping
+  probabilityMap,
+  resetProbabilityMap,
+  generateProbabilityMap,
+  reduceProbabilityMap,
+  hitList,
+  finisherMap,
+  generateFinisherMap,
+  getAttackCoordFromMap,
+  // Error Logging
   logErrorEvent,
   logTurnEvent,
   logInfoEvent,
