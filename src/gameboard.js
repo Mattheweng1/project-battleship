@@ -2,14 +2,11 @@ import {
   arraysHaveOverlap,
   cols,
   convertArrToCoord,
-  finisherMap,
   generateFinisherMap,
   getAttackCoordFromMap,
   getRowAndCol,
-  hitList,
-  probabilityMap,
   reduceProbabilityMap,
-  resetProbabilityMap,
+  resetPossibleShipsAndProbabilityMap,
   rows,
 } from "./helper";
 import { createShip } from "./ship";
@@ -183,10 +180,14 @@ function createGameboard() {
     return receiveAttack(randomCoord);
   }
 
+  const possibleShips = [];
+  const probabilityMap = [];
+  const hitList = [];
+
   function receiveAttackWithProbabilityMap() {
     let attackCoord;
     if (hitList.length > 0) {
-      finisherMap = generateFinisherMap();
+      const finisherMap = generateFinisherMap(possibleShips, hitList);
       attackCoord = getAttackCoordFromMap(finisherMap);
     } else {
       attackCoord = getAttackCoordFromMap(probabilityMap);
@@ -195,7 +196,7 @@ function createGameboard() {
     const output = receiveAttack(attackCoord);
     // Take action based on result of attack
     if (output === "missed.") {
-      reduceProbabilityMap(attackCoord);
+      reduceProbabilityMap(attackCoord, possibleShips, probabilityMap);
     } else if (output === "landed a successful hit on a ship!") {
       hitList.push(attackCoord);
     } else {
@@ -207,7 +208,7 @@ function createGameboard() {
         if (index >= 0) {
           hitList.splice(index, 1);
         }
-        reduceProbabilityMap(coord);
+        reduceProbabilityMap(coord, possibleShips, probabilityMap);
       }
     }
     // return output msg
@@ -218,8 +219,9 @@ function createGameboard() {
     ships.length = 0;
     resetNeverAttackedCoords();
     attackedCoords.length = 0;
-    resetProbabilityMap();
+    resetPossibleShipsAndProbabilityMap(possibleShips, probabilityMap);
   }
+  resetGameboard();
 
   return {
     ships,

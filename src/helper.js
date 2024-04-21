@@ -74,23 +74,22 @@ function getAdjacentCoords(coord) {
 
 // Probability Mapping
 // TODO: Move functions to helper.js, then add tests.
-const possibleShips = [];
 
-function resetPossibleShips() {
+function resetPossibleShips(possibleShips) {
   possibleShips.length = 0;
-  addShipPossibilities(2, "Patrol Boat");
-  addShipPossibilities(3, "Submarine");
-  addShipPossibilities(3, "Destroyer");
-  addShipPossibilities(4, "Battleship");
-  addShipPossibilities(5, "Carrier");
+  addShipPossibilities(2, "Patrol Boat", possibleShips);
+  addShipPossibilities(3, "Submarine", possibleShips);
+  addShipPossibilities(3, "Destroyer", possibleShips);
+  addShipPossibilities(4, "Battleship", possibleShips);
+  addShipPossibilities(5, "Carrier", possibleShips);
 }
 
-function addShipPossibilities(length, name) {
-  addHorizontalPossibilities(length, name);
-  addVerticalPossibilities(length, name);
+function addShipPossibilities(length, name, possibleShips) {
+  addHorizontalPossibilities(length, name, possibleShips);
+  addVerticalPossibilities(length, name, possibleShips);
 }
 
-function addHorizontalPossibilities(length, name) {
+function addHorizontalPossibilities(length, name, possibleShips) {
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 11 - length; j++) {
       possibleShips.push(
@@ -105,7 +104,7 @@ function addHorizontalPossibilities(length, name) {
   }
 }
 
-function addVerticalPossibilities(length, name) {
+function addVerticalPossibilities(length, name, possibleShips) {
   for (let i = 0; i < 11 - length; i++) {
     for (let j = 0; j < 10; j++) {
       possibleShips.push(
@@ -119,7 +118,7 @@ function addVerticalPossibilities(length, name) {
     }
   }
 }
-function reducePossibleShips(coord) {
+function reducePossibleShips(coord, possibleShips) {
   const removedPossibleShips = [];
   const shipsForRemoval = [];
   for (const ship of possibleShips) {
@@ -134,13 +133,13 @@ function reducePossibleShips(coord) {
   return removedPossibleShips;
 }
 
-let probabilityMap;
-
-function resetProbabilityMap() {
-  resetPossibleShips();
-  probabilityMap = generateProbabilityMap(possibleShips);
+function resetPossibleShipsAndProbabilityMap(possibleShips, probabilityMap) {
+  resetPossibleShips(possibleShips);
+  probabilityMap.length = 0;
+  for (const counter of generateProbabilityMap(possibleShips)) {
+    probabilityMap.push(counter);
+  }
 }
-resetProbabilityMap();
 
 function generateProbabilityMap(pShips) {
   const pMap = [];
@@ -164,8 +163,8 @@ function generateProbabilityMap(pShips) {
   return pMap;
 }
 
-function reduceProbabilityMap(coord) {
-  const removedPossibleShips = reducePossibleShips(coord);
+function reduceProbabilityMap(coord, possibleShips, probabilityMap) {
+  const removedPossibleShips = reducePossibleShips(coord, possibleShips);
   for (const ship of removedPossibleShips) {
     for (const coord of ship.coords) {
       const coordCounter = probabilityMap.find((coordCounter) => {
@@ -184,11 +183,7 @@ function reduceProbabilityMap(coord) {
   }
 }
 
-const hitList = [];
-
-let finisherMap = [];
-
-function generateFinisherMap() {
+function generateFinisherMap(possibleShips, hitList) {
   const possibleFinisherShips = possibleShips.filter((ship) => {
     for (const hitCoord of hitList) {
       if (ship.coords.includes(hitCoord)) {
@@ -321,12 +316,9 @@ export {
   getRowAndCol,
   getAdjacentCoords,
   // Probability Mapping
-  probabilityMap,
-  resetProbabilityMap,
+  resetPossibleShipsAndProbabilityMap,
   generateProbabilityMap,
   reduceProbabilityMap,
-  hitList,
-  finisherMap,
   generateFinisherMap,
   getAttackCoordFromMap,
   // Error Logging
