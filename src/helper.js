@@ -73,7 +73,6 @@ function getAdjacentCoords(coord) {
 }
 
 // Probability Mapping
-// TODO: Move functions to helper.js, then add tests.
 
 function resetPossibleShips(possibleShips) {
   possibleShips.length = 0;
@@ -133,21 +132,13 @@ function reducePossibleShips(coord, possibleShips) {
   return removedPossibleShips;
 }
 
-function resetPossibleShipsAndProbabilityMap(possibleShips, probabilityMap) {
-  resetPossibleShips(possibleShips);
-  probabilityMap.length = 0;
-  for (const counter of generateProbabilityMap(possibleShips)) {
-    probabilityMap.push(counter);
-  }
-}
-
-function generateProbabilityMap(pShips) {
-  const pMap = [];
-  for (const ship of pShips) {
+function generateProbabilityMap(possibleShips) {
+  const probabilityMap = [];
+  for (const ship of possibleShips) {
     for (const coord of ship.coords) {
       let coordCounter;
-      if (pMap.length > 0) {
-        coordCounter = pMap.find((coordCounter) => {
+      if (probabilityMap.length > 0) {
+        coordCounter = probabilityMap.find((coordCounter) => {
           return coordCounter.coord === coord;
         });
       } else {
@@ -156,11 +147,19 @@ function generateProbabilityMap(pShips) {
       if (coordCounter) {
         coordCounter.count++;
       } else {
-        pMap.push({ coord: coord, count: 1 });
+        probabilityMap.push({ coord: coord, count: 1 });
       }
     }
   }
-  return pMap;
+  return probabilityMap;
+}
+
+function resetPossibleShipsAndProbabilityMap(possibleShips, probabilityMap) {
+  resetPossibleShips(possibleShips);
+  probabilityMap.length = 0;
+  for (const counter of generateProbabilityMap(possibleShips)) {
+    probabilityMap.push(counter);
+  }
 }
 
 function reduceProbabilityMap(coord, possibleShips, probabilityMap) {
@@ -192,7 +191,7 @@ function generateFinisherMap(possibleShips, hitList) {
     }
     return false;
   });
-  const fMap = generateProbabilityMap(possibleFinisherShips);
+  const finisherMap = generateProbabilityMap(possibleFinisherShips);
   let adjacentCoords = [];
   for (const hitCoord of hitList) {
     adjacentCoords = adjacentCoords.concat(getAdjacentCoords(hitCoord));
@@ -201,7 +200,7 @@ function generateFinisherMap(possibleShips, hitList) {
     return !hitList.includes(coord);
   });
   for (const coord of adjacentCoords) {
-    const coordCounter = fMap.find((coordCounter) => {
+    const coordCounter = finisherMap.find((coordCounter) => {
       return coordCounter.coord === coord;
     });
     if (coordCounter) {
@@ -233,7 +232,7 @@ function generateFinisherMap(possibleShips, hitList) {
       return counter.count > 1;
     });
     for (const counter of multipleRowOrColCounters) {
-      for (const coordCounter of fMap) {
+      for (const coordCounter of finisherMap) {
         const [row, col] = getRowAndCol(coordCounter.coord);
         if (row === counter.rowOrCol || col === counter.rowOrCol) {
           coordCounter.count += 100;
@@ -241,14 +240,14 @@ function generateFinisherMap(possibleShips, hitList) {
       }
     }
   }
-  return fMap;
+  return finisherMap;
 }
 
-function getAttackCoordFromMap(pMap) {
+function getAttackCoordFromMap(probabilityMap) {
   // Find coords with most possible hits
-  pMap.sort((a, b) => a.count - b.count);
-  const highestCount = pMap[pMap.length - 1].count;
-  const highestCoordCounters = pMap.filter((coordCounter) => {
+  probabilityMap.sort((a, b) => a.count - b.count);
+  const highestCount = probabilityMap[probabilityMap.length - 1].count;
+  const highestCoordCounters = probabilityMap.filter((coordCounter) => {
     return coordCounter.count === highestCount;
   });
   // Randomly choose coord from coords with most hits
@@ -316,8 +315,8 @@ export {
   getRowAndCol,
   getAdjacentCoords,
   // Probability Mapping
-  resetPossibleShipsAndProbabilityMap,
   generateProbabilityMap,
+  resetPossibleShipsAndProbabilityMap,
   reduceProbabilityMap,
   generateFinisherMap,
   getAttackCoordFromMap,
