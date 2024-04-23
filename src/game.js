@@ -1,8 +1,6 @@
-function createGame(gameboard1, gameboard2, player1, player2) {
+function createGame(gameboard1, gameboard2) {
   const gb1 = gameboard1;
   const gb2 = gameboard2;
-  const p1 = player1;
-  const p2 = player2;
   let turn = 0;
   let setupPhase = true;
 
@@ -48,8 +46,6 @@ function createGame(gameboard1, gameboard2, player1, player2) {
   return {
     gb1,
     gb2,
-    p1,
-    p2,
     resetGame,
     turn,
     setupPhase,

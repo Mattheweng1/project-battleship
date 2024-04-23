@@ -9,7 +9,6 @@ import {
   logTurnEvent,
   rows,
 } from "./helper";
-import { createPlayer } from "./player";
 
 // Declare elements
 
@@ -49,10 +48,8 @@ const gameOverModal = document.getElementById("gameOverModal");
 
 const gb1 = createGameboard();
 const gb2 = createGameboard();
-const p1 = createPlayer("Timmy");
-const p2 = createPlayer("Mr. Guesser", true);
 
-const game = createGame(gb1, gb2, p1, p2);
+const game = createGame(gb1, gb2);
 
 function renderBoards() {
   for (let i = 0; i < 10; i++) {
