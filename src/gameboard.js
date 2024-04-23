@@ -220,6 +220,7 @@ function createGameboard() {
     resetNeverAttackedCoords();
     attackedCoords.length = 0;
     resetPossibleShipsAndProbabilityMap(possibleShips, probabilityMap);
+    hitList.length = 0;
   }
   resetGameboard();
 
