@@ -25,6 +25,7 @@ body {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 2;
+  backdrop-filter: blur(10px);
 }
 
 .modalBox {
@@ -331,6 +332,7 @@ footer {
   right: 0;
   width: 50vw;
   align-content: center;
+  backdrop-filter: blur(10px);
 }
 
 #attackForm {
