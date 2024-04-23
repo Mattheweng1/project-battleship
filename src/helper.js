@@ -1,5 +1,7 @@
 import { createShip } from "./ship";
 
+const eventLog = document.getElementById("eventLog");
+
 // Arrays of the rows and cols as labeled on the boards
 
 const rows = "ABCDEFGHIJ".split("");
