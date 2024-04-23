@@ -44,6 +44,9 @@ const randomlyAttackBtn = document.getElementById("randomlyAttack");
 const modalResult = document.getElementById("modalResult");
 const gameOverModal = document.getElementById("gameOverModal");
 
+const playerScore = document.getElementById("playerScore");
+const computerScore = document.getElementById("computerScore");
+
 // Render gameboards
 
 const gb1 = createGameboard();
@@ -387,6 +390,7 @@ function newGameEvent() {
   eventLog.textContent = "";
   logInfoEvent("Place your ships to complete the set up phase.");
   game.resetGame();
+  renderScores();
 }
 
 // Surrender event listener
@@ -404,6 +408,7 @@ function surrenderEvent() {
       "How pitiful, humanity surrendering to its own creation. The Singularity grows ever closer.";
   }
   gameOverModal.classList.remove("displayNone");
+  game.computerWins++;
 }
 
 // Click coord to add input value for attack
@@ -503,5 +508,13 @@ function unrenderAllAttacks() {
     hitCell.classList.remove("hitCell");
   }
 }
+
+// Render scores
+
+function renderScores() {
+  playerScore.innerText = `Player: ${game.playerWins}`;
+  computerScore.innerText = `Computer: ${game.computerWins}`;
+}
+renderScores();
 
 export { renderBoards, initListeners, game };
