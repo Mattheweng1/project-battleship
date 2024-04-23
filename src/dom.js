@@ -1,14 +1,7 @@
+import { logErrorEvent, logInfoEvent, logTurnEvent } from "./dom-helper";
 import { createGame } from "./game";
 import { createGameboard } from "./gameboard";
-import {
-  cols,
-  flashClassEvent,
-  getRowAndCol,
-  logErrorEvent,
-  logInfoEvent,
-  logTurnEvent,
-  rows,
-} from "./helper";
+import { cols, getRowAndCol, rows } from "./helper";
 
 // Declare elements
 
