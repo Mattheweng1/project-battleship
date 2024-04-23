@@ -66,16 +66,24 @@ footer {
 
 header {
   display: grid;
-  justify-items: center;
   font-size: 1.4rem;
-  padding: 8px 16px;
+  padding: 8px 32px;
   height: 3rem;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
 }
 
 header > div {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  justify-items: center;
+  align-content: center;
   align-items: center;
+}
+
+#title {
+  padding: 0 16px;
 }
 
 #surrender {
@@ -92,15 +100,17 @@ footer {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   justify-items: center;
   color: sandybrown;
   text-shadow: 2px 2px 2px black;
+  padding-top: 1rem;
 }
 
-.playerName {
-  padding: 16px 32px 0px;
-  font-size: 1.4rem;
+.nameAndScore {
+  padding: 0px 32px;
+  color: sandybrown;
+  text-shadow: 2px 2px 2px black;
 }
 
 #boardWrapper1,
