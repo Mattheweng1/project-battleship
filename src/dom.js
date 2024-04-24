@@ -446,7 +446,12 @@ function randomlyAttackListen() {
 }
 
 function attackEvent(random) {
-  const output = game.playerAttacksComputer(random, attackCoordInput.value);
+  let output;
+  if (random) {
+    output = game.playerAttacksComputer();
+  } else {
+    output = game.playerAttacksComputer(attackCoordInput.value);
+  }
 
   if (typeof output === "string") {
     logTurnEvent(game.turn, output);

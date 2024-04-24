@@ -13,16 +13,16 @@ function createGame(gameboard1, gameboard2) {
     this.turn = 0;
   }
 
-  function playerAttacksComputer(random, coords) {
+  function playerAttacksComputer(coord = undefined) {
     if (isGameOver()) {
       throw new Error("The game is already over.");
     }
     this.turn++;
     let msg1 = "You ";
-    if (random) {
-      msg1 += gb2.receiveAttackRandomly();
+    if (coord) {
+      msg1 += gb2.receiveAttack(coord);
     } else {
-      msg1 += gb2.receiveAttack(coords);
+      msg1 += gb2.receiveAttackRandomly();
     }
     if (isGameOver()) {
       // Player wins
