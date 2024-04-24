@@ -54,6 +54,10 @@ body {
   display: none !important;
 }
 
+.opacityZero {
+  opacity: 0;
+}
+
 .unbold {
   font-weight: normal;
 }
@@ -180,7 +184,7 @@ footer {
 .cell.hitCell::after {
   content: "⤫";
   color: red;
-  font-size: 2rem;
+  font-size: 1.9rem;
   z-index: 1;
 }
 
@@ -198,9 +202,10 @@ footer {
   top: 0;
   left: 0;
   z-index: 1;
+  transition: 1s ease-out;
 }
 
-#board2 .shipPiece {
+.sunkenShipPiece {
   z-index: -1;
   color: red;
 }
