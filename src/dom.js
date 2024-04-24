@@ -361,6 +361,7 @@ function startGameEvent() {
     flashClassEvent("infoEvent");
   } else {
     gb2.placeAllShipsRandomly();
+    // Rendered enemy ships will still be transparent until sunken
     renderAllShipsOnBoard(gb2, board2);
     setUpForm.classList.add("displayNone");
     logInfoEvent("The game has begun. Make your move.");
@@ -377,6 +378,7 @@ function newGameListen() {
 function newGameEvent() {
   gameOverModal.classList.add("displayNone");
   unrenderAllShips();
+  unrenderAllSunkenShips();
   unrenderAllAttacks();
   setUpForm.classList.remove("displayNone");
   // Clearing textContent clears all children
@@ -453,6 +455,9 @@ function attackEvent(random) {
     output = game.playerAttacksComputer(attackCoordInput.value);
   }
 
+  renderSunkenShipsOnBoard(gb1, board1);
+  renderSunkenShipsOnBoard(gb2, board2);
+
   if (typeof output === "string") {
     logTurnEvent(game.turn, output);
     modalResult.innerText = output;
@@ -466,6 +471,38 @@ function attackEvent(random) {
 
   attackCoordInput.value = "";
   renderSelected(board2, attackCoordInput, b2Selected);
+}
+
+// Render sunken ship
+
+function renderSunkenShipsOnBoard(gameboard, board) {
+  const sunkenShipNames = [];
+  for (const ship of gameboard.ships) {
+    if (ship.isSunk()) {
+      sunkenShipNames.push(ship.name);
+    }
+  }
+  if (sunkenShipNames.length === 0) return;
+  const shipPieces = board.querySelectorAll(".shipPiece");
+  const sunkenShipPieces = [...shipPieces].filter((shipPiece) => {
+    return sunkenShipNames.includes(shipPiece.getAttribute("shipName"));
+  });
+  for (const sunkenShipPiece of sunkenShipPieces) {
+    sunkenShipPiece.classList.remove("opacityZero");
+    sunkenShipPiece.classList.add("sunkenShipPiece");
+  }
+}
+
+function unrenderAllSunkenShips() {
+  const shipPiecesOnBoard1 = board1.querySelectorAll(".shipPiece");
+  for (const shipPiece of shipPiecesOnBoard1) {
+    shipPiece.classList.remove("sunkenShipPiece");
+  }
+  const shipPiecesOnBoard2 = board2.querySelectorAll(".shipPiece");
+  for (const shipPiece of shipPiecesOnBoard2) {
+    shipPiece.classList.add("opacityZero");
+    shipPiece.classList.remove("sunkenShipPiece");
+  }
 }
 
 // Render hit and missed attacks on board
