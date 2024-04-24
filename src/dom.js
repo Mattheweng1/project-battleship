@@ -215,6 +215,8 @@ function clickShipCoordListen() {
 }
 
 function clickShipCoordEvent(e) {
+  if (!game.setupPhase) return;
+
   const clickedCoord =
     e.target.getAttribute("row") + e.target.getAttribute("col");
 
