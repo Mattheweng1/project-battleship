@@ -1,6 +1,8 @@
 # Battleship
 
-This project is a web-based implementation of the classic Battleship game where you play against an intelligent AI that attacks using probability maps. Can you beat them?
+This project is a web-based implementation of the classic Battleship game where you play against an intelligent AI that attacks using probability maps. Care to challenge the computer?
+
+Click [here](https://mattheweng1.github.io/project-battleship/) to check out the deployed application.
 
 ## Features
 
@@ -9,12 +11,6 @@ This project is a web-based implementation of the classic Battleship game where 
 - Manually place ships by clicking end coordinates on board or by typing them.
 - Randomly place ships with a touch of a button.
 - Randomly attack (but this is far less accurate than the computer).
-
-## Usage
-
-Care to challenge the computer?
-
-Click [here](https://mattheweng1.github.io/project-battleship/) to check out the deployed application.
 
 ## Contributing
 
